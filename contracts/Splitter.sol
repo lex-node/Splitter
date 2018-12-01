@@ -2,34 +2,26 @@ pragma solidity ^0.4.24;
 
 contract Splitter {
    //declare variables
-   address Alice;
-   address Bob;
-   address Carol;
-   uint balance;
-   uint halfBalance;
-   uint remainderBalance;
-   uint gas;
+   address alice;
+   address bob;
+   address carol;
 
-  constructor(address _Bob, address _Carol) public payable {
+  constructor(address _bob, address _carol) public payable {
     //set the owner
-    Alice = msg.sender;
+    alice = msg.sender;
     //set Bob and Carol (established at time of deployment--would be nice if there was a mechanism to update them)
-    Bob = _Bob;
-    Carol = _Carol;
+    bob = _bob;
+    carol = _carol;
+    require(_bob != address(0));
+    require(_carol !=address(0));
   }
 
 
-  //accept amounts from Alice and split them between Bob and Carol (but Carol gets slightly less if msg.value is not event)
-  function splitBalance() public payable  {
-   gas = gasleft();
-   balance = msg.value - gas;
-   halfBalance = balance/2;
-   remainderBalance = balance - halfBalance;
-   if (msg.sender == Alice) {
-     Bob.transfer(halfBalance);
-     Carol.transfer(remainderBalance);
-   } else {
-    revert();
-   }
+  //accept amounts from Alice and split them between Bob and Carol
+  function splitValue() public payable  {
+   require((msg.value > 0) && (msg.sender == alice));
+   uint halfMsgValue = msg.value/2;
+   bob.transfer(halfMsgValue);
+   carol.transfer(halfMsgValue);
   }
 }
